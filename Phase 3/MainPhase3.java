@@ -238,16 +238,16 @@ public class MainPhase3
       removeLabel(humanLabels, humanLabels[handPosition]);
       removeLabel(computerLabels, computerLabels[computerCardPosition]);
 
-      if (humanCard.compareTo(computerCard) > 0)
+      if (humanCard.compareTo(computerCard) < 0)
       {
     	  addToWinnings(player2Winnings, computerCard, humanCard);
-          statusText.setText("You win!");
+          statusText.setText("Computer wins...!");
          
       }
-      else if (humanCard.compareTo(computerCard) < 0)
+      else if (humanCard.compareTo(computerCard) > 0)
       {
     	  addToWinnings(player1Winnings, computerCard, humanCard);
-          statusText.setText("Computer wins...");
+          statusText.setText("You win!");
       }
       else
          statusText.setText("Draw! The cards have been discarded.");
