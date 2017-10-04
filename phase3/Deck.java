@@ -6,8 +6,6 @@ import javax.swing.border.*;
 
 import phase3.Deck;
 import phase3.Card;
-import phase3.Card.Suit;
-
 import java.awt.event.*;
 import java.io.File;
 import java.lang.Comparable;
@@ -27,13 +25,13 @@ class Deck
 
     public Deck() 
     {
-       this.allocateMasterPack();
+       Deck.allocateMasterPack();
        this.init(1);
     } 
 
     public Deck(int numPacks) 
     {
-        this.allocateMasterPack();
+        Deck.allocateMasterPack();
         if (numPacks > Deck.MAX_PACKS)
         {
            this.init(Deck.MAX_PACKS);
@@ -66,7 +64,7 @@ class Deck
         {
         	for(int i=0; i<Deck.MAX_CARDS_IN_PACK; i++)
         	{
-        		this.cards[count]=this.masterPack[i];
+        		this.cards[count]=Deck.masterPack[i];
         		count++;
         	}
         }
@@ -145,7 +143,7 @@ class Deck
            } 
         }   
         if((cardCount >= this.numPacks) || 
-              (this.topCard >= this.MAX_CARDS))
+              (this.topCard >= Deck.MAX_CARDS))
         {
            return false;
         }

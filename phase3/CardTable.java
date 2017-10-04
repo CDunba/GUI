@@ -1,6 +1,7 @@
 package phase3;
 
 import java.awt.*;
+
 import javax.swing.*;
 import javax.swing.border.*;
 
@@ -58,7 +59,7 @@ class CardTable extends JFrame
       pnlComputerHand.setPreferredSize(
             new Dimension((int)this.getMinimumSize().getWidth()-60, 120));
       JScrollPane scroll = new JScrollPane(pnlComputerHand);
-      scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+      scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
       scroll.setBorder(pnlTitle1);
       this.add(scroll, BorderLayout.NORTH);   
 
@@ -98,7 +99,7 @@ class CardTable extends JFrame
       pnlHumanHand.setLayout(flowLayout);
       pnlHumanHand.setPreferredSize(new Dimension((int)this.getMinimumSize().getWidth()-60, 120));
       JScrollPane scroll2 = new JScrollPane(pnlHumanHand);
-      scroll2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+      scroll2.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
       scroll2.setBorder(pnlTitle3);
       this.add(scroll2, BorderLayout.SOUTH);
    } 

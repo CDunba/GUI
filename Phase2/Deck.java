@@ -14,14 +14,14 @@ class Deck
     
     public Deck() 
     {
-       this.allocateMasterPack();
+       Deck.allocateMasterPack();
        this.init(1);
     } 
 
     public Deck(int numPacks) 
     {
         
-        this.allocateMasterPack();
+        Deck.allocateMasterPack();
         
        
         if (numPacks > Deck.MAX_PACKS)
@@ -57,7 +57,7 @@ class Deck
 
         for (int i = 0; i < numPacks * Deck.MAX_CARDS_IN_PACK; i++) 
         {
-            this.cards[i] = this.masterPack[i % Deck.MAX_CARDS_IN_PACK];
+            this.cards[i] = Deck.masterPack[i % Deck.MAX_CARDS_IN_PACK];
         } 
 
         this.topCard = numPacks * Deck.MAX_CARDS_IN_PACK;
@@ -81,7 +81,7 @@ class Deck
         } 
         
         if((cardCount >= this.numPacks) || 
-              (this.topCard >= this.MAX_CARDS))
+              (this.topCard >= Deck.MAX_CARDS))
         {
            return false;
         }

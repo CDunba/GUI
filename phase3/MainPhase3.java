@@ -1,16 +1,17 @@
 package phase3;
 
 import javax.swing.*;
+
 import java.awt.*;
+
 import javax.swing.border.*;
 
 import phase3.Deck;
 import phase3.Card;
-import phase3.Card.Suit;
-
 import java.awt.event.*;
 import java.io.File;
 import java.lang.Comparable;
+
 import javax.swing.JOptionPane;
 
 
@@ -78,17 +79,17 @@ public class MainPhase3
       } 
 
       playLabelText[0] = new JLabel(PLAYER1_TEXT + ": 0");
-      playLabelText[0].setHorizontalAlignment(JLabel.CENTER);
-      playLabelText[0].setVerticalAlignment(JLabel.TOP);
+      playLabelText[0].setHorizontalAlignment(SwingConstants.CENTER);
+      playLabelText[0].setVerticalAlignment(SwingConstants.TOP);
       
       playLabelText[1] = new JLabel(PLAYER2_TEXT + ": 0");
-      playLabelText[1].setHorizontalAlignment(JLabel.CENTER);
-      playLabelText[1].setVerticalAlignment(JLabel.TOP);
+      playLabelText[1].setHorizontalAlignment(SwingConstants.CENTER);
+      playLabelText[1].setVerticalAlignment(SwingConstants.TOP);
       
       table.pnlPlayerText.add(playLabelText[0]);
       table.pnlPlayerText.add(playLabelText[1]);
       
-      statusText.setHorizontalAlignment(JLabel.CENTER);
+      statusText.setHorizontalAlignment(SwingConstants.CENTER);
       table.pnlStatusText.add(statusText);
       statusText.removeMouseListener(listener);
       statusText.setText("");
@@ -216,13 +217,13 @@ public class MainPhase3
       
       JLabel computerCardLabel = new JLabel();
       computerCardLabel.setIcon(GUICard.getIcon(computerCard));
-      computerCardLabel.setHorizontalAlignment(JLabel.CENTER);
-      computerCardLabel.setVerticalAlignment(JLabel.BOTTOM);
+      computerCardLabel.setHorizontalAlignment(SwingConstants.CENTER);
+      computerCardLabel.setVerticalAlignment(SwingConstants.BOTTOM);
 
       
-      computerLabels[0].setHorizontalAlignment(JLabel.CENTER);
-      humanLabels[handPosition].setHorizontalAlignment(JLabel.CENTER);
-      humanLabels[handPosition].setVerticalAlignment((JLabel.BOTTOM));
+      computerLabels[0].setHorizontalAlignment(SwingConstants.CENTER);
+      humanLabels[handPosition].setHorizontalAlignment(SwingConstants.CENTER);
+      humanLabels[handPosition].setVerticalAlignment((SwingConstants.BOTTOM));
 
       table.pnlPlayedCards.add(computerCardLabel);
       table.pnlPlayedCards.add(humanLabels[handPosition]);

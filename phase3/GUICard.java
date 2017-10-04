@@ -7,8 +7,6 @@ import javax.swing.border.*;
 
 import phase3.Deck;
 import phase3.Card;
-import phase3.Card.Suit;
-
 import java.awt.event.*;
 import java.io.File;
 import java.lang.Comparable;

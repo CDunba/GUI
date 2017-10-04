@@ -1,5 +1,6 @@
 package phase2;
 import java.awt.*;
+
 import javax.swing.*;
 
 public class MainPhase2 
@@ -52,31 +53,31 @@ public class MainPhase2
       //Computer pnlPlayArea Label Settings
       playedCardLabels[0] = new JLabel();
       playedCardLabels[0].setIcon(GUICard.getIcon(generateRandomCard()));
-      playedCardLabels[0].setHorizontalAlignment(JLabel.CENTER);
+      playedCardLabels[0].setHorizontalAlignment(SwingConstants.CENTER);
       myCardTable.pnlPlayArea.add(playedCardLabels[0]);
       
       // Computer pnlPlayerText Label Settings
       playLabelText[0] = new JLabel(PLAYER1_NAME + ": 0");
-      playLabelText[0].setHorizontalAlignment(JLabel.CENTER);
-      playLabelText[0].setVerticalAlignment(JLabel.TOP);
+      playLabelText[0].setHorizontalAlignment(SwingConstants.CENTER);
+      playLabelText[0].setVerticalAlignment(SwingConstants.TOP);
       myCardTable.pnlPlayerText.add(playLabelText[0]);
       myCardTable.pnlPlayArea.add(playLabelText[0]);
       
       //Human pnlPlayArea Label Settings
       playedCardLabels[1] = new JLabel();
       playedCardLabels[1].setIcon(GUICard.getIcon(generateRandomCard()));
-      playedCardLabels[1].setHorizontalAlignment(JLabel.CENTER);
+      playedCardLabels[1].setHorizontalAlignment(SwingConstants.CENTER);
       myCardTable.pnlPlayArea.add(playedCardLabels[1]);
       
       // Human pnlPlayerText Label Setting
       playLabelText[1] = new JLabel(PLAYER2_NAME + ": 0");
-      playLabelText[1].setHorizontalAlignment(JLabel.CENTER);
-      playLabelText[1].setVerticalAlignment(JLabel.TOP);
+      playLabelText[1].setHorizontalAlignment(SwingConstants.CENTER);
+      playLabelText[1].setVerticalAlignment(SwingConstants.TOP);
       myCardTable.pnlPlayerText.add(playLabelText[1]);
       myCardTable.pnlPlayArea.add(playLabelText[1]);
       
       // Result Settings
-      outcome.setHorizontalAlignment(JLabel.CENTER);
+      outcome.setHorizontalAlignment(SwingConstants.CENTER);
       myCardTable.pnlStatusText.add(outcome);
 
       
