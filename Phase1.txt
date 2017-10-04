@@ -1,8 +1,9 @@
 /***********************************************
  * Courtney Dunbar, Talanda Williams, Tejus Nandha
- * CST 338-30 FA 17 Homework 2
- * GUI Cards Phase 1Project Assignment
+ * CST 338-30 FA 17 Homework 5
+ * GUI Cards Phase 1 Project Assignment
  ***********************************************/
+
 package phase1;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;

@@ -1,7 +1,7 @@
 /***********************************************
  * Courtney Dunbar, Talanda Williams, Tejus Nandha
- * CST 338-30 FA 17 Homework 2
- * GUI Cards Phase 2 Project Assignment
+ * CST 338-30 FA 17 Homework 5
+ * GUI Cards Phase 3 Project Assignment
  ***********************************************/
 package phase3;
 
