@@ -1,0 +1,1102 @@
+/***********************************************
+ * Courtney Dunbar, Talanda Williams, Tejus Nandha
+ * CST 338-30 FA 17 Homework 2
+ * GUI Cards Phase 2 Project Assignment
+ ***********************************************/
+package phase3;
+
+import javax.swing.*;
+import java.awt.*;
+import javax.swing.border.*;
+
+import phase3.Deck;
+import phase3.Card;
+import phase3.Card.Suit;
+
+import java.awt.event.*;
+import java.io.File;
+import java.lang.Comparable;
+import javax.swing.JOptionPane;
+
+class Card implements Comparable
+{
+
+   public enum Suit{clubs, diamonds, hearts, spades};
+
+   private char value;
+   private Suit suit;
+   boolean flag;
+    
+    public static char[] validCardValues = {'A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'X'};
+    public static char[] validCardSuits = {'C', 'D', 'H', 'S'};
+    public static char[] valueRanks = validCardValues;
+
+    public Card()
+    {
+        this.set('A', Suit.spades);
+    }
+     
+    public Card(char value, Suit suit)
+    {
+       this.set(value, suit);
+    }
+    
+    public Card(Card card)
+    {
+       this.set(card.value, card.suit);
+    }
+
+
+    public int compareTo(Object testObj)
+    {
+       int result = 1;
+
+       if(testObj.getClass() != this.getClass())
+       {
+          result = 1;
+       }
+       else
+       {
+          Card cardObj = (Card)testObj;
+          String strRanks = new String(valueRanks);
+          int testVal=strRanks.indexOf(cardObj.getValue());
+          int thisVal=strRanks.indexOf(this.getValue());
+          
+          if(testVal < 0)
+          {
+             result = 1;
+          }  
+          else if(testVal < thisVal)
+          {
+             result = 1;
+          } 
+          else if(testVal == thisVal)
+          {
+             result = 0;
+          } 
+          else if(testVal > thisVal)
+          {
+             result = -1;  
+          } 
+       } 
+        return result;  
+    } 
+
+
+    public boolean equals(Card cardObj)
+    {
+       if((this.getValue() == cardObj.getValue()) && 
+             (this.getSuit() == cardObj.getSuit()))
+       {
+          return true;
+       } 
+      return false;   
+    } 
+    //
+    public char getValue()
+    {
+        return value;
+    }
+
+    public Suit getSuit()
+    {
+        return this.suit;
+    }
+
+    
+    public boolean set(char value, Suit suit)
+    {
+       boolean result = false;
+       
+       if(Card.checkValue(value, suit)) 
+        {
+            this.flag = false;
+            this.value = value;
+            this.suit = suit;
+            result = true;
+        } 
+        else
+        {
+            this.flag = true;
+            result = false;
+        }
+       
+       return result;
+    }
+
+    private static boolean checkValue(char value, Suit suit)
+    {
+       boolean returnValue = false;
+       
+       for(char validValue : Card.validCardValues)
+       {
+          if(String.valueOf(validValue).toLowerCase().equals(
+                String.valueOf(value).toLowerCase()))
+            {
+               returnValue = true;
+            }
+       }
+        return returnValue;
+    }
+    
+
+    static void sort(Card[] cards, int numCards)
+    {
+        boolean exchange = false;
+
+        do {
+            exchange = false;
+            for(int i = 1; i < numCards; i++)
+            {
+                if(cards[i-1].compareTo(cards[i]) > 0)
+                {
+                    Card tmpCard = new Card(cards[i-1]);
+                    cards[i-1] = new Card(cards[i]);
+                    cards[i] = new Card(tmpCard);
+                    exchange = true;
+                } 
+            }
+        } while(exchange);
+    }   
+} 
+
+
+package phase3;
+
+import javax.swing.*;
+import java.awt.*;
+import javax.swing.border.*;
+
+import phase3.Deck;
+import phase3.Card;
+import phase3.Card.Suit;
+
+import java.awt.event.*;
+import java.io.File;
+import java.lang.Comparable;
+import javax.swing.JOptionPane;
+
+
+class CardGameFramework
+{
+   private static final int MAX_PLAYERS = 50;
+
+   private int numPlayers;
+   private int numPacks;                                               
+   private int numJokersPerPack;   
+   private int numUnusedCardsPerPack; 
+   private int numCardsPerHand;   
+   private Deck deck;                                                   
+   private Hand[] hand;              
+   private Card[] unusedCardsPerPack;
+                                     
+                                 
+   public CardGameFramework( int numPacks, int numJokersPerPack,int numUnusedCardsPerPack,  Card[] unusedCardsPerPack,
+      int numPlayers, int numCardsPerHand)
+   {
+      if (numPacks < 1 || numPacks > 6)
+         numPacks = 1;
+      if (numPlayers < 1 || numPlayers > MAX_PLAYERS)
+         numPlayers = 4;
+      if (numJokersPerPack < 0 || numJokersPerPack > 4)
+          numJokersPerPack = 0;
+      if (numUnusedCardsPerPack < 0 || numUnusedCardsPerPack > 50) 
+      {
+       		numUnusedCardsPerPack = 0;
+      }
+      if (numCardsPerHand < 1 ||numCardsPerHand >  numPacks * (52 - numUnusedCardsPerPack)/ numPlayers )
+      {
+    	  numCardsPerHand = numPacks * (52 - numUnusedCardsPerPack) / numPlayers;
+      }
+
+      // assign the values 
+      this.unusedCardsPerPack = new Card[numUnusedCardsPerPack];
+      this.hand = new Hand[numPlayers];
+      for (int i = 0; i < numPlayers; i++)
+      {
+    	  this.hand[i] = new Hand(); 
+      }     
+      deck = new Deck(numPacks);
+
+      this.numPacks = numPacks;      
+      this.numPlayers = numPlayers;
+      this.numCardsPerHand = numCardsPerHand;
+      this.numJokersPerPack = numJokersPerPack;
+      this.numUnusedCardsPerPack = numUnusedCardsPerPack;
+      for (int i = 0; i < numUnusedCardsPerPack; i++)
+      {
+    	  this.unusedCardsPerPack[i] = unusedCardsPerPack[i]; 
+      }
+      startNewGame();
+   }
+
+
+   public CardGameFramework()
+   {
+      this(1, 0, 0, null, 2, 26);
+   }
+   
+
+   public Hand getHand(int index)
+   {
+      if (index < 0 || index >= numPlayers)
+      {
+    	  return new Hand();
+      }
+      return hand[index];
+    } 
+
+   
+   public Card getCardFromDeck()
+   {
+      return deck.dealCard();
+   } 
+   
+
+   public int getNumCardsRemainingInDeck()
+   {
+      return deck.getNumCards();
+   } 
+   
+
+   public void startNewGame()
+   {
+      int i, j;
+      for (i = 0; i < numPlayers; i++)
+      {
+    	  hand[i].resetHand();
+      }
+      deck.init(numPacks);
+
+      for (i = 0; i < numPacks; i++)
+      {
+    	  for ( j = 0; j < numJokersPerPack; j++)
+    	  {
+    		  Card joker= new Card('X', Card.Suit.values()[j]);
+    		  deck.addCard(joker);
+    	  }  
+      }
+      deck.shuffle();
+   }
+
+   
+   public boolean deal()
+   {
+      int numPlayerCards, player;
+      boolean deckHasCards=true;;
+
+      for (player = 0; player < numPlayers; player++)
+         hand[player].resetHand();
+      
+      for (numPlayerCards = 0; numPlayerCards < numCardsPerHand && deckHasCards ; numPlayerCards++)
+      {
+         for (player = 0; player < numPlayers; player++)
+         {
+        	 if (deck.getNumCards() > 0)
+        	 {
+        		 hand[player].addCard(deck.dealCard());
+        	 }    
+             else
+             {
+                deckHasCards = false;
+                break;
+             }
+         }
+      } 
+      return deckHasCards;
+   }
+
+   void sortHands()
+   {
+      int i;
+
+      for (i = 0; i < numPlayers; i++)
+         hand[i].sort();
+   } 
+}
+
+
+package phase3;
+
+import javax.swing.*;
+import java.awt.*;
+import javax.swing.border.*;
+
+import phase3.Deck;
+import phase3.Card;
+import phase3.Card.Suit;
+
+import java.awt.event.*;
+import java.io.File;
+import java.lang.Comparable;
+import javax.swing.JOptionPane;
+
+
+class CardListener implements MouseListener
+{
+   public void mouseEntered(MouseEvent e)
+   {
+      JLabel card = (JLabel)e.getSource();
+      LineBorder border = new LineBorder(new Color(255, 0, 255), 4);
+      card.setBorder(border);
+   }
+   
+   public void mouseExited(MouseEvent e)
+   {
+      JLabel card = (JLabel)e.getSource();
+      card.setBorder(null);
+   } 
+   
+   public void mouseClicked(MouseEvent e)
+   {
+      JLabel card = (JLabel)e.getSource();
+      
+      for (int i = 0; i < MainPhase3.humanLabels.length; i++)
+      {
+          if (MainPhase3.humanLabels[i] == card)
+          {
+             MainPhase3.playCard(i);
+             break;
+          }  
+      }
+
+      // will lead to restart of the game
+      if (MainPhase3.statusText == card)
+      {
+         MainPhase3.initGame();
+      }
+   } 
+   
+   public void mouseReleased(MouseEvent e)
+   {
+
+   } 
+   
+   public void mousePressed(MouseEvent e)
+   {
+
+   } 
+}
+
+
+package phase3;
+
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.border.*;
+
+
+class CardTable extends JFrame 
+{
+   static final int MAX_CARDS_PER_HAND = 56;
+   static final int MAX_PLAYERS = 2;
+
+   private int numCardsPerHand;
+   private int numPlayers;
+
+   public JPanel pnlComputerHand, pnlHumanHand, pnlPlayArea, pnlPlayedCards,
+      pnlPlayerText, pnlStatusText;
+    
+
+   public CardTable(String title, int numCardsPerHand, int numPlayers)
+   {
+      if((numCardsPerHand < 0) || 
+            (numCardsPerHand > CardTable.MAX_CARDS_PER_HAND))
+      {
+         this.numCardsPerHand = 20;
+      }
+            
+      this.numCardsPerHand = numCardsPerHand;
+        
+      if((numPlayers < 2) || 
+            (numPlayers > CardTable.MAX_PLAYERS))
+      {
+         this.numPlayers = numPlayers; 
+      }
+           
+      if(title == null)
+      {
+         title = ""; 
+      }
+      //
+      // build layouts and panels
+      //
+      this.setTitle(title);
+      this.setSize(800, 600);
+      this.setMinimumSize(new Dimension(800, 600));
+      this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      this.setLocationRelativeTo(null);
+
+      BorderLayout layout = new BorderLayout();
+      this.setLayout(layout);
+
+      //set layout for computer hand
+      
+      FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
+      pnlComputerHand = new JPanel();
+      pnlComputerHand.setLayout(flowLayout);
+      TitledBorder pnlTitle1 = new TitledBorder("Computer Hand");
+      pnlComputerHand.setPreferredSize(
+            new Dimension((int)this.getMinimumSize().getWidth()-60, 120));
+      JScrollPane scroll = new JScrollPane(pnlComputerHand);
+      scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+      scroll.setBorder(pnlTitle1);
+      this.add(scroll, BorderLayout.NORTH);   
+
+      
+      // setting layout for pnlPlayedCards
+      pnlPlayedCards = new JPanel();
+      GridLayout gridLayoutCardsArea = new GridLayout(1, 2);
+      pnlPlayedCards.setLayout(gridLayoutCardsArea);
+      pnlPlayedCards.setPreferredSize(new Dimension((int)this.getMinimumSize().getWidth()-50, 150));
+      
+      // setting layout for pnlPlayerText
+      pnlPlayerText = new JPanel();
+      pnlPlayerText.setLayout(gridLayoutCardsArea);
+      pnlPlayerText.setPreferredSize(new Dimension(135, 34));
+      
+      // setting layout for pnlStatusText
+      pnlStatusText = new JPanel();
+      GridLayout gridLayoutStatusArea = new GridLayout(1, 1);
+      pnlStatusText.setLayout(gridLayoutStatusArea);
+      pnlStatusText.setPreferredSize(new Dimension(135, 34));
+          
+      //set layout for playing area
+      TitledBorder pnlTitle2 = new TitledBorder("Playing Area");
+      pnlPlayArea = new JPanel();
+      pnlPlayArea.setBorder(pnlTitle2);
+      layout = new BorderLayout();
+      pnlPlayArea.setLayout(layout);
+      pnlPlayArea.add(pnlPlayedCards, BorderLayout.NORTH);
+      pnlPlayArea.add(pnlPlayerText, BorderLayout.CENTER);
+      pnlPlayArea.add(pnlStatusText, BorderLayout.SOUTH);
+      this.add(pnlPlayArea, BorderLayout.CENTER);
+
+
+      //set layout for human hand
+      TitledBorder pnlTitle3 = new TitledBorder("Your Hand");
+      pnlHumanHand = new JPanel();
+      pnlHumanHand.setLayout(flowLayout);
+      pnlHumanHand.setPreferredSize(new Dimension((int)this.getMinimumSize().getWidth()-60, 120));
+      JScrollPane scroll2 = new JScrollPane(pnlHumanHand);
+      scroll2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+      scroll2.setBorder(pnlTitle3);
+      this.add(scroll2, BorderLayout.SOUTH);
+   } 
+}  
+
+
+package phase3;
+
+import javax.swing.*;
+import java.awt.*;
+import javax.swing.border.*;
+
+import phase3.Deck;
+import phase3.Card;
+import phase3.Card.Suit;
+
+import java.awt.event.*;
+import java.io.File;
+import java.lang.Comparable;
+import javax.swing.JOptionPane;
+
+class Deck
+{
+
+    public static final short MAX_CARDS_IN_PACK = 56;
+    public static final short MAX_PACKS = 6;
+    public static final short MAX_CARDS = MAX_PACKS * MAX_CARDS_IN_PACK;
+    
+    private static Card[] masterPack = new Card[MAX_CARDS_IN_PACK];
+    private Card[] cards;  
+    private int topCard; 
+    private int numPacks;
+
+    public Deck() 
+    {
+       this.allocateMasterPack();
+       this.init(1);
+    } 
+
+    public Deck(int numPacks) 
+    {
+        this.allocateMasterPack();
+        if (numPacks > Deck.MAX_PACKS)
+        {
+           this.init(Deck.MAX_PACKS);
+        }
+        else if (numPacks < 1)
+        {
+           this.init(1); 
+        }    
+        else
+        {
+           this.init(numPacks);     
+        } 
+    } 
+
+    public int getNumCards()
+    {
+        return this.topCard;
+    }
+
+    public int getTopCard() 
+    {
+        return this.topCard;
+    }
+
+    public void init(int numPacks) 
+    {
+        this.cards = new Card[numPacks * Deck.MAX_CARDS_IN_PACK];
+        int count=0;
+        for(int j=0; j<numPacks; j++)
+        {
+        	for(int i=0; i<Deck.MAX_CARDS_IN_PACK; i++)
+        	{
+        		this.cards[count]=this.masterPack[i];
+        		count++;
+        	}
+        }
+        this.topCard = numPacks * Deck.MAX_CARDS_IN_PACK;
+    } 
+
+
+    public void shuffle() 
+    {
+       for (int i = this.topCard - 1; i >= 0; i--) 
+       {
+          Card tmpCard = this.cards[i];
+          int randomPosition = (int) (Math.random() * (this.topCard - 1));
+          this.cards[i] = this.cards[randomPosition];
+          this.cards[randomPosition] = tmpCard;
+        } 
+    } 
+   
+    
+    public Card dealCard() 
+    {
+       if (this.topCard < 0)
+       {
+          return new Card('0', Card.Suit.spades);
+       }
+       else 
+       {
+          Card outputCard = new Card(this.cards[this.topCard - 1]);
+          this.cards[this.topCard - 1] = null;
+          this.topCard--;
+          return outputCard;
+        } 
+    } 
+    
+   
+    public Card inspectCard(int k) 
+    {
+        if (k >= this.topCard || k < 0)
+        {
+           return new Card('0', Card.Suit.spades);
+        }      
+        else
+        {
+           return new Card(this.cards[k]);
+          
+        } 
+    } 
+    
+    
+    private static void allocateMasterPack() 
+    {
+    	int count=0;
+        if (Deck.masterPack != null) 
+        {
+           for (int i = 0; i < Card.Suit.values().length; i++) 
+           {
+              for (int j = 0; j < Card.validCardValues.length; j++) 
+              {
+                 Deck.masterPack[count] = new Card(Card.validCardValues[j], Card.Suit.values()[i]);
+                 count++;
+                }
+            }
+        } 
+    }
+
+   
+    
+    public boolean addCard(Card card)
+    {
+        int cardCount = 0;
+        for(Card cardInDeck : this.cards)
+        {
+           if(cardInDeck.equals(card))
+           {
+              cardCount++;
+           } 
+        }   
+        if((cardCount >= this.numPacks) || 
+              (this.topCard >= this.MAX_CARDS))
+        {
+           return false;
+        }
+        this.cards[topCard]=new Card(card);
+        return true;
+    }
+
+    
+    
+   public boolean removeCard(Card card)
+    {
+        for(int i = 0; i < this.cards.length; i++)
+        {
+           if(this.cards[i].equals(card))
+           {
+              this.cards[i] = new Card(this.cards[topCard - 1]);
+              this.topCard--;
+              return true;   
+           }        
+        }    
+        return false;
+    }
+   
+
+   public void sort()
+    {
+        Card.sort(this.cards, this.topCard);
+    } 
+} 
+
+
+
+package phase3;
+
+import javax.swing.*;
+import java.awt.*;
+import javax.swing.border.*;
+
+import phase3.Deck;
+import phase3.Card;
+import phase3.Card.Suit;
+
+import java.awt.event.*;
+import java.io.File;
+import java.lang.Comparable;
+import javax.swing.JOptionPane;
+
+class GUICard
+{
+   private static Icon[][] iconCards = new ImageIcon[14][4];
+   private static Icon iconBack;
+   static boolean iconsLoaded = false;
+   static final char[] VALID_SUITS = {'C', 'D', 'H', 'S'};
+   private static String iconFolderPath = "./images";
+   
+   public static Icon getIcon(Card card)
+   {
+      if(!GUICard.iconsLoaded)
+         GUICard.loadCardIcons();
+      
+      return iconCards[valueAsInt(card)][suitAsInt(card)];
+   } 
+   
+   
+   private static void loadCardIcons()
+   {
+      for (int i = 0; i < Card.validCardValues.length; i++)
+         for (int j = 0; j < VALID_SUITS.length; j++)
+         {
+            iconCards[i][j] = new ImageIcon(iconFolderPath + "/"+ Card.validCardValues[i] + VALID_SUITS[j] + ".gif");
+         } 
+      iconBack = new ImageIcon(iconFolderPath + "/BK.gif");
+      GUICard.iconsLoaded = true;
+   } 
+   
+   
+   private static int valueAsInt(Card card)
+   {
+      String values = new String(Card.validCardValues);
+      
+      return values.indexOf(card.getValue());
+   } 
+   
+   private static int suitAsInt(Card card)
+   {
+      return card.getSuit().ordinal();
+   }
+   
+   public static Icon getBackCardIcon()
+   {
+      if(!GUICard.iconsLoaded)
+         GUICard.loadCardIcons();
+      
+      return GUICard.iconBack;
+   } 
+}
+
+
+package phase3;
+class Hand 
+{
+   public static final int MAX_CARDS = 50;      
+
+   private Card[] myCards = new Card[MAX_CARDS];
+   int numCards = 0;
+
+    
+     public int getNumCards()
+     {  
+        return this.numCards;  
+     } 
+     
+     
+    public void resetHand()
+    {
+        this.myCards = new Card[MAX_CARDS];
+        this.numCards = 0;
+    } 
+    
+
+    void sort()
+    {
+        Card.sort(this.myCards, numCards);
+    }
+   
+    
+    public boolean addCard(Card card)
+    {
+        if(this.numCards >= MAX_CARDS)
+        {
+           return false;           
+        }
+
+        else 
+        {
+            this.myCards[numCards] = new Card(card);
+            this.numCards++;
+            return true;
+        }
+    }
+       
+    public Card getCard(int index)
+    {
+        if(index >= this.numCards || index < 0)
+            return new Card('0', Card.Suit.spades);
+        else
+            return new Card(this.myCards[index]);
+    } 
+    
+    public Card withdrawCard()
+    {
+        Card card = this.myCards[this.numCards-1];
+        this.myCards[this.numCards-1] = null;
+        this.numCards--;
+        return card;
+    }
+   
+    public Card withdrawCard(int index)
+    {
+       if (index >= this.numCards || index < 0)
+       {
+          return new Card('0', Card.Suit.spades);
+       }   
+       else
+       {
+          Card card = new Card(this.myCards[index]);
+          
+          //now shift the cards to fill vacant place
+          for(int i = index+1; i < this.numCards; i++)
+          {
+             this.myCards[i - 1] = this.myCards[i];
+             this.myCards[i] = null;
+          } 
+          this.numCards--;
+          
+          return card;
+       }
+    } 
+}
+
+
+package phase3;
+
+import javax.swing.*;
+import java.awt.*;
+import javax.swing.border.*;
+
+import phase3.Deck;
+import phase3.Card;
+import phase3.Card.Suit;
+
+import java.awt.event.*;
+import java.io.File;
+import java.lang.Comparable;
+import javax.swing.JOptionPane;
+
+
+public class MainPhase3
+{
+   static int NUM_CARDS_PER_HAND = 7;
+   static int NUM_PLAYERS = 2;
+   static int numPacksPerDeck = 1;
+   static int numJokersPerPack = 0;
+   static int numUnusedCardsPerPack = 0;
+   static Card[] unusedCardsPerPack = null;
+   
+   //labels
+   static JLabel[] computerLabels = new JLabel[NUM_CARDS_PER_HAND];
+   static JLabel[] humanLabels = new JLabel[NUM_CARDS_PER_HAND];
+   static JLabel[] playedCardLabels = new JLabel[NUM_PLAYERS];
+   static JLabel[] playLabelText = new JLabel[NUM_PLAYERS];
+   
+   
+   static Card[] player1Winnings = new Card[NUM_CARDS_PER_HAND*2];
+   static Card[] player2Winnings = new Card[NUM_CARDS_PER_HAND*2];
+   static final String PLAYER1_TEXT = "Computer";
+   static final String PLAYER2_TEXT = "You";
+   static CardGameFramework highCardGame;
+   static CardTable table;
+   static JLabel statusText = new JLabel("");
+   static CardListener listener = new CardListener();
+   
+   
+
+   public static void main(String[] args)
+   {
+	   highCardGame = new CardGameFramework(numPacksPerDeck, numJokersPerPack,
+		         numUnusedCardsPerPack, unusedCardsPerPack, NUM_PLAYERS,
+		         NUM_CARDS_PER_HAND);
+      table = new CardTable("High Card Game", NUM_CARDS_PER_HAND, NUM_PLAYERS);
+
+      initGame();
+      table.setVisible(true);
+   }
+   
+   public static void initGame()
+   {
+      table.pnlComputerHand.removeAll();
+      table.pnlPlayedCards.removeAll();
+      table.pnlPlayerText.removeAll();
+      table.pnlStatusText.removeAll();
+      table.pnlHumanHand.removeAll();
+      
+      
+      highCardGame.deal();
+      highCardGame.getHand(1).sort();
+      
+      for (int i = 0; i < NUM_CARDS_PER_HAND; i++)
+      {
+         computerLabels[i] = new JLabel();
+         computerLabels[i].setIcon(GUICard.getBackCardIcon());
+         
+         humanLabels[i] = new JLabel();
+         humanLabels[i].setIcon(GUICard.getIcon(highCardGame.getHand(1).getCard(i)));
+         humanLabels[i].addMouseListener(listener);
+         
+         table.pnlComputerHand.add(computerLabels[i]);
+         table.pnlHumanHand.add(humanLabels[i]);
+      } 
+
+      playLabelText[0] = new JLabel(PLAYER1_TEXT + ": 0");
+      playLabelText[0].setHorizontalAlignment(JLabel.CENTER);
+      playLabelText[0].setVerticalAlignment(JLabel.TOP);
+      
+      playLabelText[1] = new JLabel(PLAYER2_TEXT + ": 0");
+      playLabelText[1].setHorizontalAlignment(JLabel.CENTER);
+      playLabelText[1].setVerticalAlignment(JLabel.TOP);
+      
+      table.pnlPlayerText.add(playLabelText[0]);
+      table.pnlPlayerText.add(playLabelText[1]);
+      
+      statusText.setHorizontalAlignment(JLabel.CENTER);
+      table.pnlStatusText.add(statusText);
+      statusText.removeMouseListener(listener);
+      statusText.setText("");
+      statusText.setBorder(null);
+      
+      table.pnlHumanHand.revalidate();
+      table.pnlHumanHand.repaint();
+      table.pnlComputerHand.revalidate();
+      table.pnlComputerHand.repaint();
+      table.pnlPlayArea.revalidate();
+      table.pnlPlayArea.repaint();
+   } 
+   
+   
+   static int getComputerCard(Card playerCard)
+   {
+      Card choiceCard = null;
+      int cardIndex = 0;
+      boolean foundOne = false;
+      
+      for (int i = 0; i < highCardGame.getHand(0).getNumCards(); i++)
+      {
+         if (playerCard.compareTo(highCardGame.getHand(0).getCard(i)) < 0)
+         {
+            //The human card is lower and computer card is higher
+            if (choiceCard != null)
+            {
+               if (choiceCard.compareTo(highCardGame.getHand(0).getCard(i)) > 0)
+               {
+                  choiceCard = new Card(highCardGame.getHand(0).getCard(i));
+                  cardIndex = i;
+               } 
+            }
+            else
+            {
+               choiceCard = new Card(highCardGame.getHand(0).getCard(i));
+               foundOne = true;
+               cardIndex = i;
+            } 
+         }
+      }
+      
+      if (!foundOne)
+      {
+         for (int i = 0; i < highCardGame.getHand(0).getNumCards(); i++)
+         {
+            if(playerCard.compareTo(highCardGame.getHand(0).getCard(i)) >= 0)
+            {
+               if(choiceCard != null)
+               {
+                  if(choiceCard.compareTo(highCardGame.getHand(0).getCard(i)) > 0)
+                  {
+                     choiceCard = new Card(highCardGame.getHand(0).getCard(i));
+                     cardIndex = i;
+                  } 
+               }
+               else
+               {
+                  choiceCard = highCardGame.getHand(0).getCard(i);
+                  cardIndex = i;
+               } 
+            }
+         }
+      } 
+      return cardIndex;
+   } 
+   
+   static int getScore(Card[] winnings)
+   {
+      int score = 0;
+      for( Card card : winnings)
+      {
+    	  if(card!=null)
+    	  {
+    		  score++;
+    	  }
+    	  else
+    		  break;
+      }
+      return score;
+   }
+   
+   
+   static void removeLabel(JLabel[] labels, JLabel label)
+   {
+	   int shiftStartPos=0;
+      boolean shift = false;
+      
+      for (int i = 0; i < labels.length; i++)
+      {
+         if (labels[i] == label)
+         {
+            labels[i] = null;
+            shift = true;
+            shiftStartPos=i;
+         }
+         
+      }
+      for(int i=shiftStartPos+1; i<labels.length; i++)
+      {
+    	  labels[i-1]=labels[i];
+      }
+   }
+   
+   
+   static void addToWinnings(Card[] winnings, Card... cards)
+   {
+      for (int i = 0; i < cards.length; i++)
+         for(int j = 0; j < winnings.length; j++)
+            if(winnings[j] == null)
+            {
+               winnings[j] = new Card(cards[i]);
+               break;
+            } 
+   } 
+   
+   
+   static void playCard(int handPosition)
+   {
+      table.pnlPlayedCards.removeAll();
+
+      Card humanCard = highCardGame.getHand(1).getCard(handPosition);
+      int computerCardPosition = getComputerCard(humanCard);
+      Card computerCard = highCardGame.getHand(0).getCard(computerCardPosition);
+      
+      JLabel computerCardLabel = new JLabel();
+      computerCardLabel.setIcon(GUICard.getIcon(computerCard));
+      computerCardLabel.setHorizontalAlignment(JLabel.CENTER);
+      computerCardLabel.setVerticalAlignment(JLabel.BOTTOM);
+
+      
+      computerLabels[0].setHorizontalAlignment(JLabel.CENTER);
+      humanLabels[handPosition].setHorizontalAlignment(JLabel.CENTER);
+      humanLabels[handPosition].setVerticalAlignment((JLabel.BOTTOM));
+
+      table.pnlPlayedCards.add(computerCardLabel);
+      table.pnlPlayedCards.add(humanLabels[handPosition]);
+      humanLabels[handPosition].removeMouseListener(listener);
+      humanLabels[handPosition].setBorder(null);
+      
+      table.pnlHumanHand.remove(humanLabels[handPosition]);
+      table.pnlComputerHand.remove(computerLabels[computerCardPosition]);
+      highCardGame.getHand(0).withdrawCard(computerCardPosition);
+      highCardGame.getHand(1).withdrawCard(handPosition);
+
+      
+      removeLabel(humanLabels, humanLabels[handPosition]);
+      removeLabel(computerLabels, computerLabels[computerCardPosition]);
+
+      if (humanCard.compareTo(computerCard) < 0)
+      {
+    	  addToWinnings(player2Winnings, computerCard, humanCard);
+          statusText.setText("Computer wins...!");
+         
+      }
+      else if (humanCard.compareTo(computerCard) > 0)
+      {
+    	  addToWinnings(player1Winnings, computerCard, humanCard);
+          statusText.setText("You win!");
+      }
+      else
+         statusText.setText("Draw! The cards have been discarded.");
+      
+      playLabelText[0].setText(PLAYER1_TEXT + ": "+ getScore(player1Winnings));
+      playLabelText[1].setText(PLAYER2_TEXT + ":"+ getScore(player2Winnings));
+
+      if (highCardGame.getHand(0).getNumCards() == 0)
+      {
+         // All the cards are finished, game is over.
+         if (getScore(player1Winnings) > getScore(player2Winnings))
+         {
+            statusText.setText("Computer wins the game...");
+         }
+         else if (getScore(player1Winnings) < getScore(player2Winnings))
+         {
+            statusText.setText("You win the game!");
+         }
+         else
+         {
+            statusText.setText("The game ended in a draw.");
+         }
+         
+         statusText.setText(statusText.getText()+ " Click here to play again!");
+         statusText.addMouseListener(listener);
+      }
+
+      table.pnlHumanHand.revalidate();
+      table.pnlHumanHand.repaint();
+      table.pnlComputerHand.revalidate();
+      table.pnlComputerHand.repaint();
+      table.pnlPlayArea.revalidate();
+      table.pnlPlayArea.repaint();
+   }
+} 
