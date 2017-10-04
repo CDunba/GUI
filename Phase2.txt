@@ -1,0 +1,547 @@
+/***********************************************
+ * Courtney Dunbar, Talanda Williams, Tejus Nandha
+ * CST 338-30 FA 17 Homework 2
+ * GUI Cards Phase 2 Project Assignment
+ ***********************************************/
+package phase2;
+import java.lang.Comparable;
+
+class Card //implements Comparable
+{
+   public enum Suit{clubs, diamonds, hearts, spades};
+    
+   private char value;
+   private Suit suit;
+ 
+   boolean flag;
+    
+    public static char[] validCardValues ={'A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'X'};
+    public static char[] valueRanks = {'C', 'D', 'H', 'S'};
+    
+
+    public Card()
+    {
+        this.set('A', Suit.spades);
+    }
+     
+    public Card(char value, Suit suit)
+    {
+       this.set(value, suit);
+    }
+ 
+  
+    public Card(Card card)
+    {
+       this.set(card.value, card.suit);
+    }
+  
+
+    public String toString()
+    {
+       if(this.flag == true)
+          return "ERROR";
+      else
+          return this.value + " of " + suit.toString();         
+    } 
+    
+    public int compareTo(Object testObj)
+    {
+       int returnValue = -1;
+
+          Card cardObj = (Card)testObj;
+          String strRanks = new String(valueRanks);
+          
+          int val1=strRanks.indexOf(cardObj.getValue());
+          int val2=strRanks.indexOf(this.getValue());
+          
+          if(val1 < 0)
+          {
+             returnValue = -1;
+          }  
+          else if(val1 < val2)
+          {
+             returnValue = -1;
+          } 
+          else if(val1 == val2)
+          {
+             returnValue = 0;
+          } 
+          else if(val1 > val2)
+          {
+             returnValue = 1;  
+          }  
+       
+        return returnValue; 
+    } 
+
+    public boolean equals(Card cardObj)
+    {
+       if((this.getValue() == cardObj.getValue()) && 
+             (this.getSuit() == cardObj.getSuit()))
+       {
+          return true;
+       }
+      return false;
+       
+    } 
+    
+
+    public char getValue()
+    {
+        return value;
+    }
+ 
+    
+    public Suit getSuit()
+    {
+        return this.suit;
+    }
+
+
+    static void arraySort(Card[] cards, int arraySize)
+    {
+        boolean swapped = false;
+
+        do {
+            swapped = false;
+            for(int i = 1; i < arraySize; i++)
+            {
+                if(cards[i-1].compareTo(cards[i]) < 0)
+                {
+                    Card tmpCard = new Card(cards[i-1]);
+                    cards[i-1] = new Card(cards[i]);
+                    cards[i] = new Card(tmpCard);
+                    swapped = true;
+                } 
+            }
+        } while(swapped);
+    } 
+    
+    
+    
+    private static boolean isValid(char value, Suit suit)
+    {
+       boolean returnVal = false;
+       
+       for(int i=0; i<Card.validCardValues.length; i++)
+       {
+    	   if(value==Card.validCardValues[i])
+    	   {
+    		   for(int j=0; j<Suit.values().length; j++)
+    		   {
+    			   if(suit==Suit.values()[j])
+    			   {
+    				   returnVal=true;
+    			   }
+    		   }
+    	   }
+       }
+       return returnVal;
+    }
+    
+    public boolean set(char value, Suit suit)
+    {
+       boolean returnVal = false;
+       
+       if(Card.isValid(value, suit)) 
+        {
+            this.flag = false;
+            this.value = value;
+            this.suit = suit;
+            returnVal = true;
+        } 
+        else
+        {
+            this.flag = true;
+            returnVal = false;
+        } 
+       
+       return returnVal;
+    }
+    
+}
+
+
+package phase2;
+
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.border.*;
+
+
+class CardTable extends JFrame 
+{
+   static final int MAX_CARDS_PER_HAND = 56;
+   static final int MAX_PLAYERS = 2;
+
+   private int numCardsPerHand;
+   private int numPlayers;
+
+   public JPanel pnlComputerHand, pnlHumanHand, pnlPlayArea, pnlPlayedCards,
+      pnlPlayerText, pnlStatusText;
+    
+
+   public CardTable(String title, int numCardsPerHand, int numPlayers)
+   {
+      if((numCardsPerHand < 0) || 
+            (numCardsPerHand > CardTable.MAX_CARDS_PER_HAND))
+      {
+         this.numCardsPerHand = 20;
+      }
+            
+      this.numCardsPerHand = numCardsPerHand;
+        
+      if((numPlayers < 2) || 
+            (numPlayers > CardTable.MAX_PLAYERS))
+      {
+         this.numPlayers = numPlayers; 
+      }
+           
+      if(title == null)
+      {
+         title = ""; 
+      }
+      //
+      // build layouts and panels
+      //
+      this.setTitle(title);
+      this.setSize(800, 600);
+      this.setMinimumSize(new Dimension(800, 600));
+      this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+      BorderLayout layout = new BorderLayout();
+      this.setLayout(layout);
+
+      //set layout for computer hand
+      
+      FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
+      pnlComputerHand = new JPanel();
+      pnlComputerHand.setLayout(flowLayout);
+      TitledBorder pnlTitle1 = new TitledBorder("Computer Hand");
+      pnlComputerHand.setPreferredSize(
+            new Dimension((int)this.getMinimumSize().getWidth()-60, 120));
+      JScrollPane scroll = new JScrollPane(pnlComputerHand);
+      scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+      scroll.setBorder(pnlTitle1);
+      this.add(scroll, BorderLayout.NORTH);
+
+      
+
+      
+      // setting layout for pnlPlayedCards
+      pnlPlayedCards = new JPanel();
+      GridLayout gridLayoutCardsArea = new GridLayout(1, 2);
+      pnlPlayedCards.setLayout(gridLayoutCardsArea);
+      pnlPlayedCards.setPreferredSize(new Dimension((int)this.getMinimumSize().getWidth()-50, 150));
+      
+      // setting layout for pnlPlayerText
+      pnlPlayerText = new JPanel();
+      pnlPlayerText.setLayout(gridLayoutCardsArea);
+      pnlPlayerText.setPreferredSize(new Dimension(135, 34));
+      
+      // setting layout for pnlStatusText
+      pnlStatusText = new JPanel();
+      GridLayout gridLayoutStatusArea = new GridLayout(1, 1);
+      pnlStatusText.setLayout(gridLayoutStatusArea);
+      pnlStatusText.setPreferredSize(new Dimension(135, 34));
+          
+      //set layout for playing area
+      TitledBorder pnlTitle2 = new TitledBorder("Playing Area");
+      pnlPlayArea = new JPanel();
+      pnlPlayArea.setBorder(pnlTitle2);
+      layout = new BorderLayout();
+      pnlPlayArea.setLayout(layout);
+      pnlPlayArea.add(pnlPlayedCards, BorderLayout.NORTH);
+      pnlPlayArea.add(pnlPlayerText, BorderLayout.CENTER);
+      pnlPlayArea.add(pnlStatusText, BorderLayout.SOUTH);
+      this.add(pnlPlayArea, BorderLayout.CENTER);
+
+
+      //set layout for human hand
+      TitledBorder pnlTitle3 = new TitledBorder("Your Hand");
+      pnlHumanHand = new JPanel();
+      pnlHumanHand.setLayout(flowLayout);
+      pnlHumanHand.setPreferredSize(new Dimension((int)this.getMinimumSize().getWidth()-60, 120));
+      JScrollPane scroll2 = new JScrollPane(pnlHumanHand);
+      scroll2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+      scroll2.setBorder(pnlTitle3);
+      this.add(scroll2, BorderLayout.SOUTH);
+   } 
+}  
+
+
+package phase2;
+
+
+class Deck
+{
+    public static final short MAX_CARDS_IN_PACK = 56;
+    public static final short MAX_PACKS = 6;
+    public static final short MAX_CARDS = MAX_PACKS * MAX_CARDS_IN_PACK;
+     
+    private static Card[] masterPack = new Card[MAX_CARDS_IN_PACK];
+    private Card[] cards; 
+    private int topCard; 
+    private int numPacks; 
+    
+    public Deck() 
+    {
+       this.allocateMasterPack();
+       this.init(1);
+    } 
+
+    public Deck(int numPacks) 
+    {
+        
+        this.allocateMasterPack();
+        
+       
+        if (numPacks > Deck.MAX_PACKS)
+        {
+           this.init(Deck.MAX_PACKS);
+        }
+        else if (numPacks < 1)
+        {
+           this.init(1); 
+        }    
+        else
+        {   
+           this.init(numPacks);     
+        } 
+    } 
+    
+
+    public int getNumCards()
+    {
+        return this.topCard;
+    }
+
+
+    public int getTopCard() 
+    {
+        return this.topCard;
+    }
+
+
+    public void init(int numPacks) 
+    {
+        this.cards = new Card[numPacks * Deck.MAX_CARDS_IN_PACK];
+
+        for (int i = 0; i < numPacks * Deck.MAX_CARDS_IN_PACK; i++) 
+        {
+            this.cards[i] = this.masterPack[i % Deck.MAX_CARDS_IN_PACK];
+        } 
+
+        this.topCard = numPacks * Deck.MAX_CARDS_IN_PACK;
+    }
+
+    public void sort()
+    {
+        Card.arraySort(this.cards, this.topCard);
+    }  
+    
+
+    public boolean addCard(Card card)
+    {
+        int cardCount = 0;
+        for(Card cardInDeck : this.cards)
+        {
+           if(cardInDeck.equals(card))
+           {
+              cardCount++;
+           } 
+        } 
+        
+        if((cardCount >= this.numPacks) || 
+              (this.topCard >= this.MAX_CARDS))
+        {
+           return false;
+        }
+            
+        this.topCard++;
+        this.cards[topCard - 1] = new Card(card);
+        return true;
+    } 
+    
+    private static void allocateMasterPack() 
+    {
+    	int cardNumber=0;
+        if (Deck.masterPack != null) 
+        {
+           for (int i = 0; i < Card.Suit.values().length; i++) 
+           {
+              for (int j = 0; j < Card.validCardValues.length; j++) 
+              {
+            	  Deck.masterPack[cardNumber]=new Card(Card.validCardValues[j], Card.Suit.values()[i]);
+            	  cardNumber++;
+                } 
+            } 
+        } 
+    } 
+    
+   public boolean removeCard(Card card)
+    {
+        for(int i = 0; i < this.cards.length; i++)
+        {
+           if(this.cards[i].equals(card))
+           {
+              this.cards[i] = new Card(this.cards[topCard - 1]);
+              this.topCard--;
+              return true;         
+           }         
+        }
+        return false;
+    } 
+   
+   
+   
+} 
+
+
+package phase2;
+
+
+class Hand 
+{
+   public static final int MAX_CARDS = 56;      
+
+   private Card[] myCards = new Card[MAX_CARDS];
+   int numCards = 0;
+
+    void sort()
+    {
+        Card.arraySort(this.myCards, numCards);
+    }
+}
+
+
+package phase2;
+import java.awt.*;
+import javax.swing.*;
+
+public class MainPhase2 
+{
+ 
+    static int NUM_CARDS_PER_HAND = 7;
+    static int NUM_PLAYERS = 2;
+    static final String PLAYER1_NAME = "Computer";
+    static final String PLAYER2_NAME = "You";
+    public JPanel pnlComputerHand, pnlHumanHand, pnlPlayArea, pnlPlayedCards,
+    pnlPlayerText, pnlStatusText;
+   
+    static JLabel outcome = new JLabel("");
+    static JLabel[] computerLabels = new JLabel[NUM_CARDS_PER_HAND];
+    static JLabel[] humanLabels = new JLabel[NUM_CARDS_PER_HAND];
+    static JLabel[] playedCardLabels = new JLabel[NUM_PLAYERS];
+    static JLabel[] playLabelText = new JLabel[NUM_PLAYERS];
+    
+    
+    public static void main(String[] args)
+    {
+        
+        CardTable myCardTable = 
+              new CardTable("CardTable",NUM_CARDS_PER_HAND, NUM_PLAYERS);
+        
+        myCardTable.setSize(800, 600);
+        myCardTable.setLocationRelativeTo(null);
+        myCardTable.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+
+         for(int i = 0; i < NUM_CARDS_PER_HAND; i++)
+        {
+            computerLabels[i] = new JLabel();
+            computerLabels[i].setIcon(GUICard.getBackCardIcon());
+
+            myCardTable.pnlComputerHand.add(computerLabels[i]);
+        } 
+         
+         
+         for(int i = 0; i < NUM_CARDS_PER_HAND; i++)
+         {          
+             humanLabels[i] = new JLabel();
+             humanLabels[i].setIcon(GUICard.getIcon(generateRandomCard()));
+
+             myCardTable.pnlHumanHand.add(humanLabels[i]);
+         } 
+         
+
+      
+      //Computer pnlPlayArea Label Settings
+      playedCardLabels[0] = new JLabel();
+      playedCardLabels[0].setIcon(GUICard.getIcon(generateRandomCard()));
+      playedCardLabels[0].setHorizontalAlignment(JLabel.CENTER);
+      myCardTable.pnlPlayArea.add(playedCardLabels[0]);
+      
+      // Computer pnlPlayerText Label Settings
+      playLabelText[0] = new JLabel(PLAYER1_NAME + ": 0");
+      playLabelText[0].setHorizontalAlignment(JLabel.CENTER);
+      playLabelText[0].setVerticalAlignment(JLabel.TOP);
+      myCardTable.pnlPlayerText.add(playLabelText[0]);
+      myCardTable.pnlPlayArea.add(playLabelText[0]);
+      
+      //Human pnlPlayArea Label Settings
+      playedCardLabels[1] = new JLabel();
+      playedCardLabels[1].setIcon(GUICard.getIcon(generateRandomCard()));
+      playedCardLabels[1].setHorizontalAlignment(JLabel.CENTER);
+      myCardTable.pnlPlayArea.add(playedCardLabels[1]);
+      
+      // Human pnlPlayerText Label Setting
+      playLabelText[1] = new JLabel(PLAYER2_NAME + ": 0");
+      playLabelText[1].setHorizontalAlignment(JLabel.CENTER);
+      playLabelText[1].setVerticalAlignment(JLabel.TOP);
+      myCardTable.pnlPlayerText.add(playLabelText[1]);
+      myCardTable.pnlPlayArea.add(playLabelText[1]);
+      
+      // Result Settings
+      outcome.setHorizontalAlignment(JLabel.CENTER);
+      myCardTable.pnlStatusText.add(outcome);
+
+      
+      
+      outcome.setText("");
+      outcome.setBorder(null);
+        
+          
+      //myCardTable.setVisible(true);
+
+      /*for(int i = 0; i < NUM_PLAYERS; i++)
+      {
+         playedCardLabels[i] = new JLabel();
+         playedCardLabels[i].setIcon(GUICard.getIcon(generateRandomCard()));
+         playLabelText[i] = new JLabel();
+         /*if(i == 0)
+             playLabelText[i].setText("Computer");
+         else
+             playLabelText[i].setText("You");
+         playedCardLabels[i].setHorizontalAlignment(JLabel.CENTER);
+         myCardTable.pnlPlayArea.add(playedCardLabels[i]);
+      } 
+        
+        
+      for(JLabel label : playLabelText)
+      {
+         label.setHorizontalAlignment(JLabel.CENTER);
+         myCardTable.pnlPlayArea.add(label);
+      }*/
+        
+      myCardTable.setVisible(true);
+    } 
+    
+    static Card generateRandomCard()
+    {
+        Card card = new Card();
+        int val=Card.validCardValues.length - 1;
+        int s=Card.valueRanks.length - 1;
+       // System.out.println("value= "+val);
+        //System.out.println("Suit= "+s);
+        float random=(float) Math.random();
+        int value=(int)(random*val);
+        float random1=(float) Math.random();
+        int suit=(int)(random*s);
+       // System.out.println("suit is "+(int)(random*suitt));
+        //int value = (int)(Math.random()*(Card.validCardValues.length - 1));
+       // int suit = (int)(Math.random()*(Card.validCardSuits.length - 1));
+        card.set(Card.validCardValues[value], Card.Suit.values()[suit]);
+        return card;
+    }
+}
